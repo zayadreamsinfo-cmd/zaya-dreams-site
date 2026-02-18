@@ -18,11 +18,14 @@ const Hero = () => {
   }, []);
 
   const toggleSound = () => {
-    const video = videoRef.current;
-    if (video) {
-      video.muted = !isMuted;
-      setIsMuted(!isMuted);
+    const nextMuted = !isMuted;
+    if (videoRef.current) {
+      videoRef.current.muted = nextMuted;
+      if (!nextMuted) {
+        videoRef.current.play().catch(() => {});
+      }
     }
+    setIsMuted(nextMuted);
   };
 
   const scrollToTickets = () => {
@@ -39,17 +42,15 @@ const Hero = () => {
         <video
           ref={videoRef}
           autoPlay
-          muted
           loop
           playsInline
-          preload="metadata"
-          onLoadedData={() => setVideoLoaded(true)}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            videoLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          poster="/zaya-poster.jpg"
+          muted={isMuted}
+          className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/zaya-hero.mp4" type="video/mp4" />
+          <source 
+            src="https://pub-c8aa1332a06e41bfa847bad1f4f84678.r2.dev/amahr%20aftermovie%204kv4.mp4"
+            type="video/mp4"
+          />
         </video>
         
         {/* Dark Gradient Overlay */}
