@@ -2,3 +2,6 @@ public/*.mp4
 
 # build output
 dist/
+
+# macOS
+.DS_Store
