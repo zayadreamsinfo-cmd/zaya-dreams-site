@@ -38,7 +38,7 @@ const Hero = () => { // deploy test
           className="absolute inset-0 w-full h-full object-cover z-0"
         >
           <source 
-            src="https://pub-c8aa1332a06e41bfa847bad1f4f84678.r2.dev/amahr%20aftermovie%204kv4.mp4"
+            src="https://pub-c8aa1332a06e41bfa847bad1f4f84678.r2.dev/amahr%20aftermovie%204kv4-ios.mp4"
             type="video/mp4"
           />
         </video>
