@@ -9,6 +9,7 @@ const Newsletter = () => {
   const [consent, setConsent] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -34,6 +35,7 @@ const Newsletter = () => {
     if (!name || !email || !consent) return;
     
     setIsSubmitting(true);
+    setError('');
     
     try {
       const response = await fetch("/api/newsletter", {
@@ -58,6 +60,7 @@ const Newsletter = () => {
       setConsent(false);
     } catch (error) {
       console.error("Newsletter subscription error:", error);
+      setError('Es gab einen Fehler beim Anmelden. Bitte versuchen Sie es später erneut.');
       setIsSubmitting(false);
     }
   };
@@ -154,6 +157,13 @@ const Newsletter = () => {
                 >
                   {isSubmitting ? 'Wird angemeldet...' : 'Newsletter abonnieren'}
                 </button>
+
+                {/* Error Message */}
+                {error && (
+                  <p className="text-red-400 text-sm text-center">
+                    {error}
+                  </p>
+                )}
               </form>
             )}
           </div>

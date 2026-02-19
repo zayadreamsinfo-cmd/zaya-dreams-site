@@ -1,37 +1,37 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { Brevo } from '@getbrevo/brevo';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const { email, name } = req.body;
+
+  if (!email || !name) {
+    return res.status(400).json({ error: 'Email and name are required' });
+  }
+
+  const brevoListId = process.env.BREVO_LIST_ID;
+  if (!brevoListId) {
+    return res.status(500).json({ error: 'Brevo list ID is not configured' });
+  }
+
   try {
-    const { email } = req.body;
+    const brevo = new Brevo();
+    brevo.setApiKey(process.env.BREVO_API_KEY);
 
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
-
-    const response = await fetch('https://api.brevo.com/v3/contacts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': process.env.BREVO_API_KEY as string,
+    await brevo.contactsApi.createContact({
+      email,
+      attributes: {
+        FIRSTNAME: name,
       },
-      body: JSON.stringify({
-        email,
-        updateEnabled: true,
-      }),
+      listIds: [Number(brevoListId)],
+      updateEnabled: true,
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: data });
-    }
-
-    return res.status(200).json({ success: true });
+    return res.status(200).json({ success: true, message: 'Successfully subscribed to newsletter' });
   } catch (error) {
-    return res.status(500).json({ error: 'Server error' });
+    console.error('Brevo API error:', error);
+    return res.status(500).json({ error: 'Failed to subscribe to newsletter' });
   }
 }
