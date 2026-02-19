@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Send, Check } from 'lucide-react';
+import { useRef, useState, useEffect } from 'react';
+import { Check } from 'lucide-react';
 
 const Newsletter = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -35,14 +35,31 @@ const Newsletter = () => {
     
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setName('');
-    setEmail('');
-    setConsent(false);
+    try {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          name,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Newsletter subscription failed");
+      }
+
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      setName('');
+      setEmail('');
+      setConsent(false);
+    } catch (error) {
+      console.error("Newsletter subscription error:", error);
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -90,9 +107,6 @@ const Newsletter = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Name Field */}
                 <div>
-                  <label htmlFor="newsletter-name" className="block text-white/80 text-sm mb-2">
-                    Name
-                  </label>
                   <input
                     type="text"
                     id="newsletter-name"
@@ -106,9 +120,6 @@ const Newsletter = () => {
 
                 {/* Email Field */}
                 <div>
-                  <label htmlFor="newsletter-email" className="block text-white/80 text-sm mb-2">
-                    E-Mail
-                  </label>
                   <input
                     type="email"
                     id="newsletter-email"
@@ -124,35 +135,24 @@ const Newsletter = () => {
                 <div className="flex items-start gap-3">
                   <input
                     type="checkbox"
-                    id="consent"
+                    id="newsletter-consent"
                     checked={consent}
                     onChange={(e) => setConsent(e.target.checked)}
                     required
-                    className="mt-1 w-5 h-5 rounded border border-white/20 bg-white/5 text-[#C00020] focus:ring-[#C00020] focus:ring-offset-0 cursor-pointer"
+                    className="w-5 h-5 mt-0.5 accent-[#C00020] cursor-pointer"
                   />
-                  <label htmlFor="consent" className="text-white/60 text-sm leading-relaxed cursor-pointer">
-                    Ich stimme der Verarbeitung meiner Daten gemäß{' '}
-                    <a href="#" className="text-[#C00020] hover:underline">
-                      Datenschutzerklärung
-                    </a>{' '}
-                    zu.
+                  <label htmlFor="newsletter-consent" className="text-white/60 text-sm cursor-pointer">
+                    Ich akzeptiere die Datenschutzerklärung und möchte den Newsletter erhalten.
                   </label>
                 </div>
 
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isSubmitting || !name || !email || !consent}
-                  className="w-full bg-[#C00020] hover:bg-[#E00030] disabled:bg-white/20 disabled:cursor-not-allowed text-white font-semibold px-8 py-4 text-lg tracking-wide transition-all duration-300 flex items-center justify-center gap-3"
+                  disabled={isSubmitting}
+                  className="w-full bg-[#C00020] hover:bg-[#E00030] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200"
                 >
-                  {isSubmitting ? (
-                    <span>Anmelden...</span>
-                  ) : (
-                    <>
-                      <span>Anmelden</span>
-                      <Send className="w-5 h-5" />
-                    </>
-                  )}
+                  {isSubmitting ? 'Wird angemeldet...' : 'Newsletter abonnieren'}
                 </button>
               </form>
             )}
