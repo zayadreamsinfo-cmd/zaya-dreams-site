@@ -9,6 +9,7 @@ const Contact = () => {
   const [message, setMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -30,19 +31,40 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name || !email || !message) return;
-    
+
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setName('');
-    setEmail('');
-    setMessage('');
+    setError(null);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Fehler beim Senden.");
+      }
+
+      setIsSubmitted(true);
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch (err: any) {
+      setError(err.message || "Etwas ist schiefgelaufen.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -147,6 +169,12 @@ const Contact = () => {
                     placeholder="Deine Nachricht..."
                   />
                 </div>
+
+                {error && (
+                  <p className="text-red-500 text-sm">
+                    {error}
+                  </p>
+                )}
 
                 {/* Submit Button */}
                 <button

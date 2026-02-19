@@ -30,10 +30,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: "Ungültige E-Mail-Adresse." });
     }
 
-    const host = process.env.BREVO_SMTP_HOST || "smtp-relay.brevo.com";
-    const port = Number(process.env.BREVO_SMTP_PORT || 587);
-    const user = process.env.BREVO_SMTP_USER;
-    const pass = process.env.BREVO_SMTP_PASS;
+    const host =
+      process.env.BREVO_SMTP_HOST ||
+      process.env.SMTP_HOST ||
+      "smtp-relay.brevo.com";
+
+    const port = Number(
+      process.env.BREVO_SMTP_PORT ||
+        process.env.SMTP_PORT ||
+        587
+    );
+
+    const user = process.env.BREVO_SMTP_USER || process.env.SMTP_USER;
+    const pass = process.env.BREVO_SMTP_PASS || process.env.SMTP_PASS;
 
     const to = process.env.CONTACT_TO_EMAIL; // z.B. zaya.dreams.info@gmail.com
     const from = process.env.CONTACT_FROM_EMAIL; // z.B. zaya.dreams.info@gmail.com oder noreply@deinedomain
@@ -41,7 +50,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!user || !pass || !to || !from) {
       return res.status(500).json({
         error:
-          "Server nicht konfiguriert (ENV fehlt). Prüfe BREVO_SMTP_USER/PASS + CONTACT_TO_EMAIL + CONTACT_FROM_EMAIL.",
+          "Server nicht konfiguriert (ENV fehlt). Prüfe BREVO_SMTP_USER/PASS oder SMTP_USER/PASS + CONTACT_TO_EMAIL + CONTACT_FROM_EMAIL.",
       });
     }
 
