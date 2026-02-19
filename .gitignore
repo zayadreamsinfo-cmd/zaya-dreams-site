@@ -1,1 +1,4 @@
 public/*.mp4
+
+# build output
+dist/
