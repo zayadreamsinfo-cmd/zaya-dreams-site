@@ -1,20 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 
 const Hero = () => { // deploy test
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    // Try to autoplay when component mounts
-    const video = videoRef.current;
-    if (video) {
-      video.play().catch(() => {
-        // Autoplay blocked - video will remain paused
-        console.log('Autoplay blocked by browser');
-      });
-    }
-  }, []);
 
   const toggleSound = () => {
     const nextMuted = !isMuted;
@@ -41,10 +30,12 @@ const Hero = () => { // deploy test
         <video
           ref={videoRef}
           autoPlay
+          muted
           loop
           playsInline
-          muted={isMuted}
-          className="absolute inset-0 w-full h-full object-cover"
+          preload="auto"
+          poster="/hero-poster.jpg"
+          className="absolute inset-0 w-full h-full object-cover z-0"
         >
           <source 
             src="https://pub-c8aa1332a06e41bfa847bad1f4f84678.r2.dev/amahr%20aftermovie%204kv4.mp4"
@@ -54,13 +45,13 @@ const Hero = () => { // deploy test
         
         {/* Dark Gradient Overlay */}
         <div 
-          className="absolute inset-0"
+          className="absolute inset-0 z-10"
           style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.85))' }}
         />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-center">
+      <div className="relative z-20 flex flex-col items-center justify-center h-full px-6 text-center">
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight mb-4 animate-fade-in-up">
           ZAYA Dreams
         </h1>
