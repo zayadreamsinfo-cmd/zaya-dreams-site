@@ -7,6 +7,7 @@ import Tickets from './sections/Tickets';
 import Newsletter from './sections/Newsletter';
 import Contact from './sections/Contact';
 import Footer from './sections/Footer';
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Contact />
       </main>
       <Footer />
+      <Analytics />
     </div>
   );
 }
